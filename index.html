@@ -500,7 +500,7 @@ ${quizData.map((q, index) => `${index + 1}. ${q.question} - 정답: ${q.options[
             `.trim();
             
             // 여기에 선생님의 이메일 주소를 입력하세요
-            const teacherEmail = 'kjtran.ys@gmail.com'; // 실제 이메일 주소로 변경하세요
+            const teacherEmail = 'ys2013l@naver.com'; // 실제 이메일 주소로 변경하세요
             
             // mailto 링크 생성
             const mailtoLink = `mailto:${teacherEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
@@ -517,7 +517,13 @@ ${quizData.map((q, index) => `${index + 1}. ${q.question} - 정답: ${q.options[
             document.querySelector('.email-btn').disabled = true;
             document.querySelector('.email-btn').textContent = '이메일 전송됨';
         }
-
+        
+        // 네이버메일로 전송
+        function openNaver(to, subject, body) {
+            const naverUrl = `https://mail.naver.com/write/popup?srvid=note&to=${to}&subject=${subject}&body=${body}`;
+            window.open(naverUrl, '_blank');
+        }
+        
         // 키보드 이벤트 (1, 2, 3 키로 선택 가능)
         document.addEventListener('keydown', function(event) {
             if (selectedAnswer !== -1) return;
