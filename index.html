@@ -1,538 +1,142 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .quiz-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .quiz-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-        
-        @keyframes shine {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
-        
-        .header {
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .title {
-            font-size: 2.5em;
-            font-weight: bold;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .score-board {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            padding: 15px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 15px;
-            color: white;
-            font-weight: bold;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .question-container {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .question-word {
-            font-size: 3em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 40px;
-            padding: 20px;
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transform: scale(1);
-            transition: transform 0.3s ease;
-        }
-        
-        .question-word:hover {
-            transform: scale(1.05);
-        }
-        
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .option {
-            padding: 20px;
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            border: none;
-            border-radius: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .option::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .option:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .option:hover::before {
-            left: 100%;
-        }
-        
-        .option.correct {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            animation: correct 0.6s ease;
-        }
-        
-        .option.incorrect {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            animation: incorrect 0.6s ease;
-        }
-        
-        @keyframes correct {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes incorrect {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
-        }
-        
-        .next-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            display: none;
-        }
-        
-        .next-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-        }
-        
-        .result-container {
-            display: none;
-            padding: 30px;
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 20px;
-            margin-top: 20px;
-        }
-        
-        .result-container h2 {
-            font-size: 2em;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
-        .student-info {
-            margin-top: 30px;
-        }
-        
-        .student-info h3 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-        
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .input-group input {
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1.1em;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
-        }
-        
-        .email-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            font-weight: bold;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            margin-top: 20px;
-        }
-        
-        .email-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-        }
-        
-        .email-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .submit-message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            display: none;
-        }
-        
-        .submit-message.success {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-        
-        .submit-message.error {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-        }
-        
-        .feedback {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 15px;
-            display: none;
-        }
-        
-        .feedback.correct {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-        
-        .feedback.incorrect {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-        }
-        
-        @media (max-width: 768px) {
-            .quiz-container {
-                padding: 20px;
-            }
-            .title {
-                font-size: 2em;
-            }
-            .question-word {
-                font-size: 2.5em;
-            }
-            .option {
-                font-size: 1.1em;
-                padding: 15px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>젠지 퀴즈</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #fff0f5;
+      color: #333;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    .card {
+      background: #ffe4ec;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      color: #d63384;
+      text-align: center;
+    }
+    .question {
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 0.3rem 0;
+      padding: 0.7rem;
+      background: #fff;
+      border: 2px solid #d63384;
+      color: #d63384;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .options button:hover {
+      background-color: #f8d7da;
+    }
+    .hidden {
+      display: none;
+    }
+    .submit-area {
+      margin-top: 1.5rem;
+    }
+    input[type="email"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+    }
+    button.submit-btn {
+      background-color: #d63384;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
-    <div class="quiz-container">
-        <div class="header">
-            <h1 class="title">Quiz</h1>
+  <h1>🍓 복습 퀴즈</h1>
+  <div class="card" id="quiz-container"></div>
+  <div class="submit-area hidden" id="submit-area">
+    <input type="email" id="email" placeholder="ys2013l@naver.com" required />
+    <button class="submit-btn" onclick="submitQuiz()">지정된 메일로 전송</button>
+    <p id="status" style="color: green;"></p>
+  </div>
+
+  <script>
+    const quizData = [
+      { question: "사과는 어느 것일까요?", options: ["apple", "banana", "lemon"], answer: 0 },
+      { question: "바나나는 어느 것일까요?", options: ["grape", "banana", "cherry"], answer: 1 },
+      { question: "레몬은 어느 것일까요?", options: ["lemon", "orange", "melon"], answer: 0 },
+      { question: "포도는 어느 것일까요?", options: ["grape", "kiwi", "mango"], answer: 0 },
+      { question: "수박은 어느 것일까요?", options: ["melon", "watermelon", "peach"], answer: 1 },
+    ];
+
+    let current = 0;
+    const answers = [];
+
+    const container = document.getElementById("quiz-container");
+    const submitArea = document.getElementById("submit-area");
+
+    function loadQuestion() {
+      const q = quizData[current];
+      container.innerHTML = `
+        <div class="question">${current + 1}. ${q.question}</div>
+        <div class="options">
+          ${q.options.map((opt, idx) => `<button onclick="selectOption(${idx})">${opt}</button>`).join('')}
         </div>
-        
-        <div class="score-board">
-            <div>문제: <span id="current-question">1</span> / <span id="total-questions">5</span></div>
-            <div>점수: <span id="score">0</span></div>
-        </div>
-        
-        <div class="question-container">
-            <div class="question-word" id="question-word">사과</div>
-            <div class="options">
-                <button class="option" onclick="selectAnswer(0)">Apple</button>
-                <button class="option" onclick="selectAnswer(1)">Orange</button>
-                <button class="option" onclick="selectAnswer(2)">Banana</button>
-            </div>
-            <div class="feedback" id="feedback"></div>
-            <button class="next-btn" id="next-btn" onclick="nextQuestion()">다음 문제</button>
-        </div>
-        
-        <div class="result-container" id="result-container">
-            <h2>퀴즈 완료! 🎉</h2>
-            <p id="final-score"></p>
-            <div class="student-info">
-                <h3>학생 정보 입력</h3>
-                <div class="input-group">
-                    <input type="text" id="student-id" placeholder="학번을 입력하세요" maxlength="20">
-                    <input type="text" id="student-name" placeholder="이름을 입력하세요" maxlength="20">
-                </div>
-                <button class="email-btn" onclick="sendEmail()">이메일 전송</button>
-                <div id="submit-message" class="submit-message"></div>
-            </div>
-        </div>
-    </div>
+      `;
+    }
 
-    <script>
-        // 퀴즈 데이터
-        const quizData = [
-            {
-                question: "おねはいします",
-                options: ["부탁합니다", "여기있습니다", "들어주세요"],
-                correct: 0
-            },
-            {
-                question: "おつかれさまでした",
-                options: ["안녕히 가세요", "수고하셨습니다", "오랜만입니다"],
-                correct: 1
-            },
-            {
-                question: "ごちそうさまでした",
-                options: ["안녕하세요", "잘 먹겠습니다", "잘 먹었습니다"],
-                correct: 2
-            },
-            {
-                question: "先生",
-                options: ["せんせ", "せんせい", "せんせえ"],
-                correct: 1
-            },
-            {
-                question: "会社員",
-                options: ["かいしゃいん", "がいしゃいん", "かいしやいん"],
-                correct: 0
-            }
-        ];
+    function selectOption(index) {
+      answers.push(index);
+      current++;
+      if (current < quizData.length) {
+        loadQuestion();
+      } else {
+        container.classList.add("hidden");
+        submitArea.classList.remove("hidden");
+      }
+    }
 
-        let currentQuestion = 0;
-        let score = 0;
-        let selectedAnswer = -1;
+    async function submitQuiz() {
+      const email = document.getElementById("email").value;
+      const result = quizData.map((q, i) => ({
+        question: q.question,
+        selected: q.options[answers[i]],
+        correct: q.options[q.answer],
+        isCorrect: answers[i] === q.answer,
+      }));
 
-        // 페이지 로드 시 초기화
-        window.onload = function() {
-            loadQuestion();
-        };
-
-        // 문제 로드
-        function loadQuestion() {
-            const questionData = quizData[currentQuestion];
-            document.getElementById('question-word').textContent = questionData.question;
-            
-            const options = document.querySelectorAll('.option');
-            options.forEach((option, index) => {
-                option.textContent = questionData.options[index];
-                option.classList.remove('correct', 'incorrect');
-                option.disabled = false;
-            });
-            
-            document.getElementById('current-question').textContent = currentQuestion + 1;
-            document.getElementById('total-questions').textContent = quizData.length;
-            document.getElementById('feedback').style.display = 'none';
-            document.getElementById('next-btn').style.display = 'none';
-            selectedAnswer = -1;
-        }
-
-        // 답변 선택
-        function selectAnswer(answerIndex) {
-            if (selectedAnswer !== -1) return; // 이미 선택했으면 무시
-            
-            selectedAnswer = answerIndex;
-            const options = document.querySelectorAll('.option');
-            const correctIndex = quizData[currentQuestion].correct;
-            
-            // 모든 옵션 비활성화
-            options.forEach(option => option.disabled = true);
-            
-            // 정답/오답 표시
-            if (answerIndex === correctIndex) {
-                options[answerIndex].classList.add('correct');
-                score++;
-                document.getElementById('score').textContent = score;
-                showFeedback('정답! 🎉', 'correct');
-            } else {
-                options[answerIndex].classList.add('incorrect');
-                options[correctIndex].classList.add('correct');
-                showFeedback('오답! 😅 정답은 ' + quizData[currentQuestion].options[correctIndex] + '입니다.', 'incorrect');
-            }
-            
-            // 다음 버튼 표시
-            document.getElementById('next-btn').style.display = 'inline-block';
-        }
-
-        // 피드백 표시
-        function showFeedback(message, type) {
-            const feedback = document.getElementById('feedback');
-            feedback.textContent = message;
-            feedback.className = `feedback ${type}`;
-            feedback.style.display = 'block';
-        }
-
-        // 다음 문제
-        function nextQuestion() {
-            currentQuestion++;
-            if (currentQuestion < quizData.length) {
-                loadQuestion();
-            } else {
-                showResult();
-            }
-        }
-
-        // 결과 표시
-        function showResult() {
-            document.querySelector('.question-container').style.display = 'none';
-            document.getElementById('result-container').style.display = 'block';
-            
-            const percentage = Math.round((score / quizData.length) * 100);
-            let message = `총 ${quizData.length}문제 중 ${score}문제를 맞혔습니다!\n(${percentage}%)`;
-            
-            if (percentage >= 80) {
-                message += "\n완벽해요! 💯";
-            } else if (percentage >= 60) {
-                message += "\n잘했어요! 👍";
-            } else {
-                message += "\n다시 한번 도전해보세요! 💪";
-            }
-            
-            document.getElementById('final-score').textContent = message;
-        }
-
-        // 이메일 전송 함수
-        function sendEmail() {
-            const studentId = document.getElementById('student-id').value.trim();
-            const studentName = document.getElementById('student-name').value.trim();
-            const messageDiv = document.getElementById('submit-message');
-            
-            if (!studentId || !studentName) {
-                messageDiv.textContent = '학번과 이름을 모두 입력해주세요.';
-                messageDiv.className = 'submit-message error';
-                messageDiv.style.display = 'block';
-                return;
-            }
-            
-            // 이메일 내용 구성
-            const emailSubject = `복습용 퀴즈 결과 - ${studentName}(${studentId})`;
-            const emailBody = `
-복습용 퀴즈 결과 보고
-
-학번: ${studentId}
-이름: ${studentName}
-점수: ${score}/${quizData.length}
-정답률: ${Math.round((score / quizData.length) * 100)}%
-완료 시간: ${new Date().toLocaleString('ko-KR')}
-
-문제별 상세 결과:
-${quizData.map((q, index) => `${index + 1}. ${q.question} - 정답: ${q.options[q.correct]}`).join('\n')}
-            `.trim();
-            
-            // 여기에 선생님의 이메일 주소를 입력하세요
-            const teacherEmail = 'outlook_A635E6F9D239720D@outlook.com'; // 실제 이메일 주소로 변경하세요
-            
-            // mailto 링크 생성
-            const mailtoLink = `mailto:${teacherEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-            
-            // 이메일 클라이언트 열기
-            window.location.href = mailtoLink;
-            
-            // 성공 메시지 표시
-            messageDiv.textContent = `${studentName}님의 결과 이메일이 준비되었습니다. 이메일을 확인하여 전송해주세요.`;
-            messageDiv.className = 'submit-message success';
-            messageDiv.style.display = 'block';
-            
-            // 이메일 버튼 비활성화
-            document.querySelector('.email-btn').disabled = true;
-            document.querySelector('.email-btn').textContent = '이메일 전송됨';
-        }
-        
-        // 네이버메일로 전송
-        function openNaver(to, subject, body) {
-            const naverUrl = `https://mail.naver.com/write/popup?srvid=note&to=${to}&subject=${subject}&body=${body}`;
-            window.open(naverUrl, '_blank');
-        }
-        
-        // 키보드 이벤트 (1, 2, 3 키로 선택 가능)
-        document.addEventListener('keydown', function(event) {
-            if (selectedAnswer !== -1) return;
-            
-            const key = event.key;
-            if (key >= '1' && key <= '3') {
-                selectAnswer(parseInt(key) - 1);
-            }
+      try {
+        const res = await fetch("/api/send-result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ result, email }),
         });
-    </script>
+
+        if (res.ok) {
+          document.getElementById("status").innerText = "이메일이 전송되었습니다 🎉";
+        } else {
+          document.getElementById("status").innerText = "전송 실패. 다시 시도해주세요.";
+        }
+      } catch (e) {
+        document.getElementById("status").innerText = "오류 발생";
+      }
+    }
+
+    loadQuestion();
+  </script>
 </body>
 </html>
