@@ -510,7 +510,7 @@ ${quizData.map((q, index) => `${index + 1}. ${q.question} - 정답: ${q.options[
             window.location.href = mailtoLink;
             
             // 성공 메시지 표시
-            messageDiv.textContent = `${studentName}님의 결과 이메일이 준비되었습니다. 이메일을 확인하여 전송해주세요.`;
+            messageDiv.textContent = `${studentName}님의 결과 이메일이 준비되었습니다. 전송해주세요.`;
             messageDiv.className = 'submit-message success';
             messageDiv.style.display = 'block';
             
