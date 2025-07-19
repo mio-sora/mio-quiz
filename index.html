@@ -2,10 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>단어 퀴즈</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>복습 퀴즈</title>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <script>
-    emailjs.init("7La-r048CNMAMCGle"); // ← 본인 EmailJS Public Key 입력
+    emailjs.init("7La-r048CNMAMCGle"); // ⬅️ 당신의 EmailJS Public Key
   </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600;700;800&display=swap');
@@ -15,263 +16,127 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       min-height: 100vh;
       color: #fff;
       text-align: center;
       padding: 20px;
       overflow-x: hidden;
     }
-    
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: -1;
-    }
-    
+
     .quiz-container {
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 24px;
       padding: 40px;
       max-width: 420px;
       margin: 0 auto;
-      box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.25),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transform: translateY(0);
-      transition: all 0.3s ease;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                  0 0 0 1px rgba(255, 255, 255, 0.1),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
       animation: slideIn 0.6s ease-out;
     }
-    
+
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
+
     h1 {
       font-size: 38px;
       font-weight: 800;
-      color: #fff;
-      margin-bottom: 10px;
-      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       background: linear-gradient(45deg, #fff, #f0f0f0);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
     }
-    
+
     .word {
       font-size: 32px;
       font-weight: 700;
       margin: 30px 0;
       padding: 20px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+      background: rgba(255, 255, 255, 0.15);
       border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      color: #fff;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-    
+
     .options {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    
+
     .options button {
       padding: 18px 24px;
       font-size: 16px;
       font-weight: 600;
       border: none;
       border-radius: 16px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+      background: rgba(255, 255, 255, 0.2);
       color: #fff;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
+      transition: all 0.3s ease;
     }
-    
-    .options button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-    
-    .options button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
-    }
-    
-    .options button:hover::before {
-      left: 100%;
-    }
-    
-    .options button:active {
-      transform: translateY(0);
-    }
-    
+
     .feedback {
       margin-top: 20px;
-      font-weight: 700;
       font-size: 18px;
+      font-weight: 700;
       color: #fff;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      opacity: 0;
-      animation: fadeIn 0.4s ease-out forwards;
     }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
+
     .score {
       margin-top: 25px;
       font-size: 22px;
       font-weight: 600;
-      color: #fff;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
-    
+
     .form-section {
       display: none;
       margin-top: 30px;
-      padding: 25px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(15px);
-      animation: slideIn 0.6s ease-out;
     }
-    
-    .form-section h3 {
-      margin-bottom: 20px;
-      font-size: 24px;
-      font-weight: 700;
-      color: #fff;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    input[type="text"], input[type="email"] {
-      padding: 16px 20px;
+
+    input[type="text"] {
+      padding: 16px;
       margin: 8px 0;
       width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
+      border: none;
       font-size: 16px;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
     }
-    
-    input[type="text"]:focus, input[type="email"]:focus {
-      outline: none;
-      border-color: rgba(255, 255, 255, 0.4);
-      background: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
-    
-    input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-    }
-    
+
     button.send {
       margin-top: 20px;
       padding: 16px 32px;
       background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
       border: none;
       border-radius: 12px;
       font-size: 18px;
-      font-weight: 600;
+      color: white;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-      position: relative;
-      overflow: hidden;
     }
-    
-    button.send::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-    
-    button.send:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5);
-    }
-    
-    button.send:hover::before {
-      left: 100%;
-    }
-    
-    .quiz-container:hover {
-      transform: translateY(-2px);
-      box-shadow: 
-        0 35px 70px -15px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    }
-    
-    @media (max-width: 480px) {
-      .quiz-container {
-        padding: 25px;
-        margin: 10px;
-      }
-      
-      h1 {
-        font-size: 28px;
-      }
-      
-      .word {
-        font-size: 24px;
-        padding: 15px;
-      }
+
+    @media only screen and (max-width: 768px) {
+      h1 { font-size: 28px; }
+      .word { font-size: 24px; padding: 15px; }
+      .options button { font-size: 14px; padding: 14px; }
+      input[type="text"] { font-size: 14px; padding: 14px; }
+      .score { font-size: 18px; }
+      .form-section h3 { font-size: 20px; }
     }
   </style>
 </head>
 <body>
-
   <div class="quiz-container">
-    <h1>단어 퀴즈</h1>
-
+    <h1>복습 퀴즈</h1>
     <div id="quiz">
       <div class="word" id="word">로딩중...</div>
       <div class="options" id="options"></div>
       <div class="feedback" id="feedback"></div>
     </div>
-
     <div class="score" id="score"></div>
 
     <div class="form-section" id="form-section">
@@ -293,6 +158,7 @@
 
     let currentQuestion = 0;
     let score = 0;
+    let answerLog = [];
 
     function loadQuestion() {
       const q = quizData[currentQuestion];
@@ -300,26 +166,16 @@
       document.getElementById("feedback").textContent = "";
       const optionsDiv = document.getElementById("options");
       optionsDiv.innerHTML = "";
-      
-      // 애니메이션 효과를 위한 지연
+
       q.options.forEach((option, index) => {
         setTimeout(() => {
           const btn = document.createElement("button");
           btn.textContent = option;
           btn.onclick = () => checkAnswer(option);
-          btn.style.opacity = '0';
-          btn.style.transform = 'translateY(20px)';
           optionsDiv.appendChild(btn);
-          
-          // 버튼 애니메이션
-          setTimeout(() => {
-            btn.style.transition = 'all 0.4s ease';
-            btn.style.opacity = '1';
-            btn.style.transform = 'translateY(0)';
-          }, 50);
         }, index * 100);
       });
-      
+
       document.getElementById("score").textContent = `문제 ${currentQuestion + 1} / ${quizData.length}`;
     }
 
@@ -327,32 +183,23 @@
       const q = quizData[currentQuestion];
       const feedback = document.getElementById("feedback");
       const buttons = document.querySelectorAll('.options button');
-      
-      // 모든 버튼 비활성화
+
       buttons.forEach(btn => btn.disabled = true);
-      
+
       if (selected === q.answer) {
         score++;
         feedback.textContent = "정답입니다! 🎉";
         feedback.style.color = "#4ade80";
-        feedback.style.textShadow = "0 0 20px rgba(74, 222, 128, 0.5)";
       } else {
         feedback.textContent = `오답 😢 정답은 "${q.answer}"`;
         feedback.style.color = "#f87171";
-        feedback.style.textShadow = "0 0 20px rgba(248, 113, 113, 0.5)";
       }
 
-      // 정답 버튼 하이라이트
-      buttons.forEach(btn => {
-        if (btn.textContent === q.answer) {
-          btn.style.background = "linear-gradient(135deg, rgba(74, 222, 128, 0.3), rgba(34, 197, 94, 0.2))";
-          btn.style.border = "2px solid rgba(74, 222, 128, 0.5)";
-          btn.style.boxShadow = "0 0 30px rgba(74, 222, 128, 0.4)";
-        } else if (btn.textContent === selected && selected !== q.answer) {
-          btn.style.background = "linear-gradient(135deg, rgba(248, 113, 113, 0.3), rgba(239, 68, 68, 0.2))";
-          btn.style.border = "2px solid rgba(248, 113, 113, 0.5)";
-          btn.style.boxShadow = "0 0 30px rgba(248, 113, 113, 0.4)";
-        }
+      answerLog.push({
+        question: q.word,
+        correctAnswer: q.answer,
+        selected: selected,
+        isCorrect: selected === q.answer
       });
 
       setTimeout(() => {
@@ -367,44 +214,16 @@
 
     function showResult() {
       const percentage = (score / quizData.length) * 100;
-      let resultEmoji = "";
-      let resultMessage = "";
-      
-      if (percentage >= 80) {
-        resultEmoji = "🏆";
-        resultMessage = "훌륭해요!";
-      } else if (percentage >= 60) {
-        resultEmoji = "👍";
-        resultMessage = "잘했어요!";
-      } else {
-        resultEmoji = "📚";
-        resultMessage = "더 연습해보세요!";
-      }
-      
+      let resultEmoji = percentage >= 80 ? "🏆" : percentage >= 60 ? "👍" : "📚";
+      let resultMessage = percentage >= 80 ? "훌륭해요!" : percentage >= 60 ? "잘했어요!" : "더 연습해보세요!";
       document.getElementById("quiz").innerHTML = `
-        <div style="animation: celebration 0.8s ease-out;">
+        <div>
           <div style="font-size: 64px; margin: 20px 0;">${resultEmoji}</div>
-          <h2 style="font-size: 32px; margin: 15px 0; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.3);">${resultMessage}</h2>
-          <div style="font-size: 28px; font-weight: 700; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-            ${score} / ${quizData.length} 점
-          </div>
-          <div style="font-size: 20px; color: rgba(255,255,255,0.8); margin-top: 10px;">
-            ${percentage.toFixed(1)}%
-          </div>
+          <h2>${resultMessage}</h2>
+          <div style="font-size: 28px;">${score} / ${quizData.length} 점</div>
+          <div style="font-size: 20px;">${percentage.toFixed(1)}%</div>
         </div>
       `;
-      
-      // CSS 애니메이션 추가
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes celebration {
-          0% { transform: scale(0.8) rotate(-10deg); opacity: 0; }
-          50% { transform: scale(1.1) rotate(5deg); opacity: 1; }
-          100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-      `;
-      document.head.appendChild(style);
-      
       document.getElementById("form-section").style.display = "block";
     }
 
@@ -414,25 +233,31 @@
       const percent = (score / quizData.length) * 100;
 
       if (!name || !id) {
-        alert("이름과 학번을 입력해 주세요.");
+        alert("이름과 학번을 모두 입력해 주세요.");
         return;
       }
+
+      let wrongAnswers = answerLog.filter(item => !item.isCorrect)
+        .map(item => `- ${item.question}: 오답 → "${item.selected}" (정답: "${item.correctAnswer}")`)
+        .join('\n') || "모든 문제 정답 ✅";
 
       const params = {
         name: name,
         student_id: id,
         score: `${score} / ${quizData.length}`,
         result_percent: `${percent.toFixed(1)}%`,
-        email: "YOUR_RECEIVER_kjtran.ys@gmail" // ← 선생님 이메일 주소로 변경
+        wrong_details: wrongAnswers,
+        email: "YOUR_RECEIVER_kjtran.ys@gmail" // ⬅️ 선생님 이메일 주소
       };
 
       emailjs.send("service_rfnavck", "template_223aylm", params)
         .then(res => {
           alert("결과가 성공적으로 전송되었습니다!");
-        })
-        .catch(err => {
-          alert("전송 중 오류가 발생했습니다. 다시 시도해 주세요.");
-          console.log(err);
+          // 화면 새로고침 (초기화)
+          window.location.reload();
+        }).catch(err => {
+          alert("전송 중 오류가 발생했습니다.");
+          console.error(err);
         });
     }
 
